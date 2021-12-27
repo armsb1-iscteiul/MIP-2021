@@ -1,0 +1,21 @@
+{
+  "fields": [
+    {
+      "fieldName": "nomeRestaurante",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [],
+  "entityType": "start-form",
+  "processBpmnId": "RestauranteProcess",
+  "processEntityName": "RestauranteProcess",
+  "domainEntityName": "Restaurante",
+  "service": "serviceClass",
+  "dto": "mapstruct",
+  "jpaMetamodelFiltering": false,
+  "readOnly": false,
+  "pagination": "no",
+  "name": "RestauranteStartForm",
+  "changelogDate": "20210401000002",
+  "skipFakeData": true
+}

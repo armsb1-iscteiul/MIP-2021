@@ -1,0 +1,35 @@
+{
+  "fields": [
+    {
+      "fieldName": "nomeRestaurante",
+      "fieldType": "String",
+      "fieldReadOnly": true
+    },
+    {
+      "fieldName": "nomeCliente",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "numeroContribuinte",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "email",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [],
+  "entityType": "user-task-form",
+  "processBpmnId": "RestauranteProcess",
+  "processEntityName": "RestauranteProcess",
+  "taskBpmnId": "PedirInfoCliente",
+  "domainEntityName": "Restaurante",
+  "service": "serviceClass",
+  "dto": "mapstruct",
+  "jpaMetamodelFiltering": false,
+  "readOnly": false,
+  "pagination": "no",
+  "skipFakeData": true,
+  "name": "PedirInfoCliente",
+  "changelogDate": "20210401000004"
+}

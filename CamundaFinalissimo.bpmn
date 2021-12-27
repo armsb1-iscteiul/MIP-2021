@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_114bjaz" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+  <bpmn:process id="RestauranteProcess" name="Restaurante Plan Process" isExecutable="true">
+    <bpmn:serviceTask id="CriarRefeicaoAlternativa" name="Criar Refeicao Alternativa" implementation="##WebService" camunda:delegateExpression="${criarRefeicaoAlternativaDelegate}">
+      <bpmn:incoming>Flow_00ck4fd</bpmn:incoming>
+      <bpmn:outgoing>Flow_08d1eef</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="ReceberComprovativoDePagamento" name="Receber Comprovativo de pagamento" implementation="##WebService">
+      <bpmn:incoming>Flow_0sp8t96</bpmn:incoming>
+      <bpmn:outgoing>Flow_0k6493t</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="RegistarPedidoNaPlataforma" name="Registar pedido na plataforma" implementation="##WebService">
+      <bpmn:incoming>Flow_1sy7vrw</bpmn:incoming>
+      <bpmn:outgoing>Flow_04e92rq</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_PossivelRealizar_Inicio" name="possivel de realizar  ?" gatewayDirection="Diverging">
+      <bpmn:incoming>Flow_1gmh3rt</bpmn:incoming>
+      <bpmn:outgoing>Flow_00ck4fd</bpmn:outgoing>
+      <bpmn:outgoing>Flow_14lbsix</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:startEvent id="Event_13rw5e7" name="">
+      <bpmn:outgoing>Flow_1rj1pj7</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="GatewayXOR" name="Cliente aceitou&#10; a proposta" gatewayDirection="Diverging">
+      <bpmn:incoming>Flow_0vklwq4</bpmn:incoming>
+      <bpmn:outgoing>Flow_PropostaAceite_SIM</bpmn:outgoing>
+      <bpmn:outgoing>Flow_PropostaAceite_NAO</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sendTask id="EmailRestauranteSummaryDelegate" name="Enviar fatura ao cliente " implementation="##WebService" camunda:delegateExpression="${emailRestauranteSummaryDelegate}">
+      <bpmn:incoming>Flow_CasaOuRestaurante_CASA2</bpmn:incoming>
+      <bpmn:outgoing>Flow_0sp8t96</bpmn:outgoing>
+      <bpmn:ioSpecification>
+        <bpmn:dataOutput />
+        <bpmn:inputSet name="DefaultInputSet" />
+        <bpmn:outputSet name="DefaultOutputSet" />
+      </bpmn:ioSpecification>
+    </bpmn:sendTask>
+    <bpmn:endEvent id="End" name="End">
+      <bpmn:incoming>Flow_00s2hhw</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:boundaryEvent id="Time_Event" name="20s" attachedToRef="ReceberComprovativoDePagamento">
+      <bpmn:outgoing>Flow_1a3cdg9</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1b5w0xk">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT20S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_PropostaAceite_SIM" name="Sim" sourceRef="GatewayXOR" targetRef="Gateway_PossivelRealizar_FIM">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${processInstance.restaurante.confirmaNovaProposta}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1rj1pj7" name="" sourceRef="Event_13rw5e7" targetRef="EscolherTipoServico" />
+    <bpmn:sequenceFlow id="Flow_PropostaAceite_NAO" name="Nao" sourceRef="GatewayXOR" targetRef="CancelaPedido">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!processInstance.restaurante.confirmaNovaProposta}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="CancelaPedido" name="Cancela Pedido">
+      <bpmn:incoming>Flow_PropostaAceite_NAO</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="VerificarRefeicao" name="Verificar Refeicao" implementation="##WebService">
+      <bpmn:incoming>Flow_04e92rq</bpmn:incoming>
+      <bpmn:outgoing>Flow_1mwcz6r</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_04e92rq" sourceRef="RegistarPedidoNaPlataforma" targetRef="VerificarRefeicao" />
+    <bpmn:sequenceFlow id="Flow_1mwcz6r" sourceRef="VerificarRefeicao" targetRef="ConfirmarRefeicao" />
+    <bpmn:sequenceFlow id="Flow_08d1eef" sourceRef="CriarRefeicaoAlternativa" targetRef="ConfirmaNovaProposta" />
+    <bpmn:serviceTask id="ConfirmarRefeicao" name="Confirmar Refeicao" implementation="##WebService" camunda:delegateExpression="${confirmarRefeicaoDelegate}">
+      <bpmn:incoming>Flow_1mwcz6r</bpmn:incoming>
+      <bpmn:outgoing>Flow_1gmh3rt</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="ConfirmaNovaProposta" name="Confirma Nova Proposta" implementation="##WebService">
+      <bpmn:incoming>Flow_08d1eef</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vklwq4</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0vklwq4" sourceRef="ConfirmaNovaProposta" targetRef="GatewayXOR" />
+    <bpmn:exclusiveGateway id="Gateway_PossivelRealizar_FIM" gatewayDirection="Diverging">
+      <bpmn:incoming>Flow_PropostaAceite_SIM</bpmn:incoming>
+      <bpmn:incoming>Flow_14lbsix</bpmn:incoming>
+      <bpmn:outgoing>Flow_00chors</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="EscolherTipoServico" name="Escolher Tipo Servico" implementation="##WebService">
+      <bpmn:incoming>Flow_1rj1pj7</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ic5vny</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0ic5vny" sourceRef="EscolherTipoServico" targetRef="Gateway_CasaOuRestaurante_Inicio" />
+    <bpmn:exclusiveGateway id="Gateway_CasaOuRestaurante_Inicio" name="Casa?" gatewayDirection="Diverging">
+      <bpmn:incoming>Flow_0ic5vny</bpmn:incoming>
+      <bpmn:outgoing>Flow_CasaOuRestaurante_RESTAURANTE</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CasaOuRestaurante_CASA</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_CasaOuRestaurante_RESTAURANTE" name="Nao" sourceRef="Gateway_CasaOuRestaurante_Inicio" targetRef="Gateway_CasaOuRestaurante_Fim">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!processInstance.restaurante.casa}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="PedirInfoCliente" name="Pedir Info Cliente" implementation="##WebService">
+      <bpmn:incoming>Flow_CasaOuRestaurante_CASA</bpmn:incoming>
+      <bpmn:outgoing>Flow_0xf6geo</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_CasaOuRestaurante_CASA" name="Sim" sourceRef="Gateway_CasaOuRestaurante_Inicio" targetRef="PedirInfoCliente">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${processInstance.restaurante.casa}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:exclusiveGateway id="Gateway_CasaOuRestaurante_Fim" gatewayDirection="Diverging">
+      <bpmn:incoming>Flow_CasaOuRestaurante_RESTAURANTE</bpmn:incoming>
+      <bpmn:incoming>Flow_0xf6geo</bpmn:incoming>
+      <bpmn:outgoing>Flow_1sy7vrw</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1sy7vrw" sourceRef="Gateway_CasaOuRestaurante_Fim" targetRef="RegistarPedidoNaPlataforma" />
+    <bpmn:sequenceFlow id="Flow_0xf6geo" sourceRef="PedirInfoCliente" targetRef="Gateway_CasaOuRestaurante_Fim" />
+    <bpmn:userTask id="RegistarPreco" name="Registar Preco" implementation="##WebService">
+      <bpmn:incoming>Flow_00chors</bpmn:incoming>
+      <bpmn:outgoing>Flow_046t0ef</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_00chors" sourceRef="Gateway_PossivelRealizar_FIM" targetRef="RegistarPreco" />
+    <bpmn:exclusiveGateway id="Gateway_0hse0gw" name="Casa?" gatewayDirection="Diverging">
+      <bpmn:incoming>Flow_046t0ef</bpmn:incoming>
+      <bpmn:outgoing>Flow_CasaOuRestaurante_CASA2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CasaOuRestaurante_RESTAURANTE2</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_046t0ef" sourceRef="RegistarPreco" targetRef="Gateway_0hse0gw" />
+    <bpmn:sequenceFlow id="Flow_CasaOuRestaurante_CASA2" name="Sim" sourceRef="Gateway_0hse0gw" targetRef="EmailRestauranteSummaryDelegate">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${processInstance.restaurante.casa}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0sp8t96" sourceRef="EmailRestauranteSummaryDelegate" targetRef="ReceberComprovativoDePagamento" />
+    <bpmn:exclusiveGateway id="Gateway_0kznfob" gatewayDirection="Diverging">
+      <bpmn:incoming>Flow_0k6493t</bpmn:incoming>
+      <bpmn:incoming>Flow_CasaOuRestaurante_RESTAURANTE2</bpmn:incoming>
+      <bpmn:outgoing>Flow_00s2hhw</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_00s2hhw" sourceRef="Gateway_0kznfob" targetRef="End" />
+    <bpmn:sequenceFlow id="Flow_0k6493t" sourceRef="ReceberComprovativoDePagamento" targetRef="Gateway_0kznfob" />
+    <bpmn:sequenceFlow id="Flow_CasaOuRestaurante_RESTAURANTE2" name="Nao" sourceRef="Gateway_0hse0gw" targetRef="Gateway_0kznfob">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!processInstance.restaurante.casa}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="CancelaPedido2" name="Cancela Pedido">
+      <bpmn:incoming>Flow_1a3cdg9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1a3cdg9" sourceRef="Time_Event" targetRef="CancelaPedido2" />
+    <bpmn:sequenceFlow id="Flow_1gmh3rt" sourceRef="ConfirmarRefeicao" targetRef="Gateway_PossivelRealizar_Inicio" />
+    <bpmn:sequenceFlow id="Flow_00ck4fd" name="Nao" sourceRef="Gateway_PossivelRealizar_Inicio" targetRef="CriarRefeicaoAlternativa">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!possivelRealizar}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_14lbsix" name="Sim" sourceRef="Gateway_PossivelRealizar_Inicio" targetRef="Gateway_PossivelRealizar_FIM">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${possivelRealizar}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+  </bpmn:process>
+  <bpmn:error id="Error_02abtxg" name="Cancelar" errorCode="Nao Pagamento" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="RestauranteProcess">
+      <bpmndi:BPMNEdge id="Flow_14lbsix_di" bpmnElement="Flow_14lbsix">
+        <di:waypoint x="1110" y="140" />
+        <di:waypoint x="1500" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1295" y="122" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00ck4fd_di" bpmnElement="Flow_00ck4fd">
+        <di:waypoint x="1090" y="160" />
+        <di:waypoint x="1090" y="251" />
+        <di:waypoint x="1120" y="251" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1095" y="183" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gmh3rt_di" bpmnElement="Flow_1gmh3rt">
+        <di:waypoint x="1030" y="141" />
+        <di:waypoint x="1050" y="141" />
+        <di:waypoint x="1050" y="140" />
+        <di:waypoint x="1070" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1a3cdg9_di" bpmnElement="Flow_1a3cdg9">
+        <di:waypoint x="2079" y="285" />
+        <di:waypoint x="2079" y="322" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0p0wo2y_di" bpmnElement="Flow_CasaOuRestaurante_RESTAURANTE2">
+        <di:waypoint x="1800" y="140" />
+        <di:waypoint x="2140" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1809" y="122" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0k6493t_di" bpmnElement="Flow_0k6493t">
+        <di:waypoint x="2100" y="230" />
+        <di:waypoint x="2160" y="230" />
+        <di:waypoint x="2160" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00s2hhw_di" bpmnElement="Flow_00s2hhw">
+        <di:waypoint x="2180" y="140" />
+        <di:waypoint x="2316" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0sp8t96_di" bpmnElement="Flow_0sp8t96">
+        <di:waypoint x="1940" y="230" />
+        <di:waypoint x="2000" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qo3r7p_di" bpmnElement="Flow_CasaOuRestaurante_CASA2">
+        <di:waypoint x="1780" y="160" />
+        <di:waypoint x="1780" y="230" />
+        <di:waypoint x="1840" y="230" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1786" y="192" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_046t0ef_di" bpmnElement="Flow_046t0ef">
+        <di:waypoint x="1710" y="140" />
+        <di:waypoint x="1760" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00chors_di" bpmnElement="Flow_00chors">
+        <di:waypoint x="1540" y="140" />
+        <di:waypoint x="1610" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0xf6geo_di" bpmnElement="Flow_0xf6geo">
+        <di:waypoint x="530" y="310" />
+        <di:waypoint x="580" y="310" />
+        <di:waypoint x="580" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1sy7vrw_di" bpmnElement="Flow_1sy7vrw">
+        <di:waypoint x="600" y="140" />
+        <di:waypoint x="660" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0x6u0sz_di" bpmnElement="Flow_CasaOuRestaurante_CASA">
+        <di:waypoint x="400" y="160" />
+        <di:waypoint x="400" y="310" />
+        <di:waypoint x="430" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="361" y="232" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yn7gdg_di" bpmnElement="Flow_CasaOuRestaurante_RESTAURANTE">
+        <di:waypoint x="420" y="140" />
+        <di:waypoint x="560" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="471" y="122" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ic5vny_di" bpmnElement="Flow_0ic5vny">
+        <di:waypoint x="330" y="140" />
+        <di:waypoint x="380" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vklwq4_di" bpmnElement="Flow_0vklwq4">
+        <di:waypoint x="1380" y="252" />
+        <di:waypoint x="1431" y="252" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08d1eef_di" bpmnElement="Flow_08d1eef">
+        <di:waypoint x="1220" y="251" />
+        <di:waypoint x="1250" y="251" />
+        <di:waypoint x="1250" y="250" />
+        <di:waypoint x="1280" y="250" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mwcz6r_di" bpmnElement="Flow_1mwcz6r">
+        <di:waypoint x="900" y="140" />
+        <di:waypoint x="930" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04e92rq_di" bpmnElement="Flow_04e92rq">
+        <di:waypoint x="760" y="140" />
+        <di:waypoint x="800" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0r4nc3g_di" bpmnElement="Flow_PropostaAceite_NAO">
+        <di:waypoint x="1450" y="271" />
+        <di:waypoint x="1450" y="312" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1459" y="286" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rj1pj7_di" bpmnElement="Flow_1rj1pj7">
+        <di:waypoint x="185" y="140" />
+        <di:waypoint x="230" y="140" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0o20t2p_di" bpmnElement="Flow_PropostaAceite_SIM">
+        <di:waypoint x="1469" y="252" />
+        <di:waypoint x="1520" y="252" />
+        <di:waypoint x="1520" y="160" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1485" y="234" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_1bgurfk_di" bpmnElement="CriarRefeicaoAlternativa">
+        <dc:Bounds x="1120" y="211" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1j0nw6i_di" bpmnElement="ReceberComprovativoDePagamento">
+        <dc:Bounds x="2000" y="190" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1o686tx_di" bpmnElement="RegistarPedidoNaPlataforma">
+        <dc:Bounds x="660" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1vc3vef_di" bpmnElement="Gateway_PossivelRealizar_Inicio" isMarkerVisible="true">
+        <dc:Bounds x="1070" y="120" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1062" y="83" width="56" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_13rw5e7_di" bpmnElement="Event_13rw5e7">
+        <dc:Bounds x="155" y="125" width="30" height="30" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_14zpajo_di" bpmnElement="GatewayXOR" isMarkerVisible="true">
+        <dc:Bounds x="1430" y="231" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1413" y="198" width="74" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1b035c8_di" bpmnElement="EmailRestauranteSummaryDelegate">
+        <dc:Bounds x="1840" y="186" width="100" height="87" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_13ctn40_di" bpmnElement="End">
+        <dc:Bounds x="2316" y="126" width="28" height="28" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2320" y="161" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0b66xza_di" bpmnElement="CancelaPedido">
+        <dc:Bounds x="1432" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1411" y="359" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0tciyf3_di" bpmnElement="VerificarRefeicao">
+        <dc:Bounds x="800" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1lgpqx3_di" bpmnElement="ConfirmarRefeicao">
+        <dc:Bounds x="930" y="101" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0kjwklv_di" bpmnElement="ConfirmaNovaProposta">
+        <dc:Bounds x="1280" y="211" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0agwmj5_di" bpmnElement="Gateway_PossivelRealizar_FIM" isMarkerVisible="true">
+        <dc:Bounds x="1500" y="120" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1143" y="77" width="73" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1nqtgml_di" bpmnElement="EscolherTipoServico">
+        <dc:Bounds x="230" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0451gdy_di" bpmnElement="Gateway_CasaOuRestaurante_Inicio" isMarkerVisible="true">
+        <dc:Bounds x="380" y="120" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="384" y="83" width="33" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0k6magi_di" bpmnElement="PedirInfoCliente">
+        <dc:Bounds x="430" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1pd8l5j_di" bpmnElement="Gateway_CasaOuRestaurante_Fim" isMarkerVisible="true">
+        <dc:Bounds x="560" y="120" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="740" y="246" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ij1fyz_di" bpmnElement="RegistarPreco">
+        <dc:Bounds x="1610" y="100" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0hse0gw_di" bpmnElement="Gateway_0hse0gw" isMarkerVisible="true">
+        <dc:Bounds x="1760" y="120" width="40" height="40" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1763" y="96" width="33" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0kznfob_di" bpmnElement="Gateway_0kznfob" isMarkerVisible="true">
+        <dc:Bounds x="2140" y="120" width="40" height="40" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_005u3ir_di" bpmnElement="CancelaPedido2">
+        <dc:Bounds x="2061" y="322" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2040" y="369" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0sjp62e_di" bpmnElement="Time_Event">
+        <dc:Bounds x="2064" y="255" width="30" height="30" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2091" y="293" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

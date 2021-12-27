@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
+  <head>
+    <title>Restaurante Summary</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <p>Dear <span th:text="${restaurante.nomeCliente}"></span></p>
+    <p>Here is a summary of your travel <b th:text="${restaurante.nomeRestaurante}"></b></p>
+    <ul>
+	<li><b>NomeCliente: </b> <span th:text="${restaurante.nomeCliente}"></span></li>
+        <li><b>NumeroContribuinte: </b> <span th:text="${restaurante.numeroContribuinte}"></span></li>
+        <li><b>Email: </b> <span th:text="${restaurante.email}"></span></li>
+	<li><b>Preço: </b> <span th:text="${restaurante.preco}"></span></li>
+    </ul>
+    <p>
+      Regards,
+      <br />
+      <em>AgileKip Team</em>
+    </p>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "fields": [
+    {
+      "fieldName": "nomeRestaurante",
+      "fieldType": "String",
+      "fieldReadOnly": true
+    },
+    {
+      "fieldName": "casa",
+      "fieldType": "Boolean"
+    }
+  ],
+  "relationships": [],
+  "entityType": "user-task-form",
+  "processBpmnId": "RestauranteProcess",
+  "processEntityName": "RestauranteProcess",
+  "taskBpmnId": "EscolherTipoServico",
+  "domainEntityName": "Restaurante",
+  "service": "serviceClass",
+  "dto": "mapstruct",
+  "jpaMetamodelFiltering": false,
+  "readOnly": false,
+  "pagination": "no",
+  "skipFakeData": true,
+  "name": "EscolherTipoServico",
+  "changelogDate": "20210401000004"
+}

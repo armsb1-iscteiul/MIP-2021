@@ -1,0 +1,74 @@
+{
+  "fields": [
+    {
+      "fieldName": "nomeRestaurante",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "casa",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "nomeCliente",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "numeroContribuinte",
+      "fieldType": "Integer"
+    },
+    {
+      "fieldName": "email",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "nomePratoPrincipal",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "nomeBebida",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "nomeSobremesa",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "existePratoPrincipal",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "existeBebida",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "existeSobremesa",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "possivelRealizar",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "confirmaNovaProposta",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "preco",
+      "fieldType": "Double"
+    },
+    {
+      "fieldName": "confirmarPagamento",
+      "fieldType": "Boolean"
+    }
+  ],
+  "relationships": [],
+  "entityType": "domain",
+  "service": "serviceClass",
+  "dto": "mapstruct",
+  "jpaMetamodelFiltering": false,
+  "readOnly": true,
+  "pagination": "no",
+  "name": "Restaurante",
+  "changelogDate": "20210401000001",
+  "skipFakeData": true
+}

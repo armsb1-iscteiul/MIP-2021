@@ -1,0 +1,42 @@
+{
+  "fields": [
+    {
+      "fieldName": "nomeRestaurante",
+      "fieldType": "String",
+      "fieldReadOnly": true
+    },
+    {
+      "fieldName": "nomePratoPrincipal",
+      "fieldType": "String",
+      "fieldReadOnly": true
+    },
+    {
+      "fieldName": "nomeBebida",
+      "fieldType": "String",
+      "fieldReadOnly": true
+    },
+    {
+      "fieldName": "nomeSobremesa",
+      "fieldType": "String",
+      "fieldReadOnly": true
+    },
+    {
+      "fieldName": "confirmaNovaProposta",
+      "fieldType": "Boolean"
+    }
+  ],
+  "relationships": [],
+  "entityType": "user-task-form",
+  "processBpmnId": "RestauranteProcess",
+  "processEntityName": "RestauranteProcess",
+  "taskBpmnId": "ConfirmaNovaProposta",
+  "domainEntityName": "Restaurante",
+  "service": "serviceClass",
+  "dto": "mapstruct",
+  "jpaMetamodelFiltering": false,
+  "readOnly": false,
+  "pagination": "no",
+  "skipFakeData": true,
+  "name": "ConfirmaNovaProposta",
+  "changelogDate": "20210401000004"
+}

@@ -1,0 +1,35 @@
+{
+  "fields": [
+    {
+      "fieldName": "nomeRestaurante",
+      "fieldType": "String",
+      "fieldReadOnly": true
+    },
+    {
+      "fieldName": "nomePratoPrincipal",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "nomeBebida",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "nomeSobremesa",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [],
+  "entityType": "user-task-form",
+  "processBpmnId": "RestauranteProcess",
+  "processEntityName": "RestauranteProcess",
+  "taskBpmnId": "RegistarPedidoNaPlataforma",
+  "domainEntityName": "Restaurante",
+  "service": "serviceClass",
+  "dto": "mapstruct",
+  "jpaMetamodelFiltering": false,
+  "readOnly": false,
+  "pagination": "no",
+  "skipFakeData": true,
+  "name": "RegistarPedidoNaPlataforma",
+  "changelogDate": "20210401000004"
+}
